@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pharma School</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Monetag SDK -->
+  <script src="//libtl.com/sdk.js" data-zone="9669778" data-sdk="show_9669778"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f2f2f2; }
+    select, button { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
+    #pdfLink { display: none; margin-top: 20px; text-align: center; }
+    a.btn { display: inline-block; color: white; background: #0088cc; padding: 12px 20px; border-radius: 8px; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h2>📚 Pharma School</h2>
+  <select id="course"></select>
+  <select id="semester"></select>
+  <select id="subject"></select>
+  <select id="unit"></select>
+
+  <div id="pdfLink">
+    <a id="pdfBtn" class="btn" href="#" target="_blank">📄 Open PDF</a>
+  </div>
+
+  <script>
+    // grab DOM
+    const courseSelect  = document.getElementById("course");
+    const semesterSelect= document.getElementById("semester");
+    const subjectSelect = document.getElementById("subject");
+    const unitSelect    = document.getElementById("unit");
+    const pdfLinkWrap   = document.getElementById("pdfLink");
+    const pdfBtn        = document.getElementById("pdfBtn");
+    let data = {};
+
+    // fetch your JSON
+    fetch("https://raw.githubusercontent.com/Sonurajpt/Pharm.json/refs/heads/main/Pharm.json")
+      .then(res=>res.json())
+      .then(json=>{
+        data = json;
+        populate(courseSelect, Object.keys(data), "Select Course");
+      });
+
+    // helper: fill a <select>
+    function populate(sel, items, placeholder){
+      sel.innerHTML = `<option disabled selected>${placeholder}</option>`;
+      items.forEach(i=>{
+        const opt = document.createElement("option");
+        opt.value = i; opt.textContent = i;
+        sel.appendChild(opt);
+      });
+      sel.disabled = false;
+    }
+
+    // chain listeners
+    courseSelect.addEventListener("change",()=>{
+      const c = courseSelect.value;
+      populate(semesterSelect, Object.keys(data[c]), "Select Semester");
+      reset([subjectSelect, unitSelect], ["Select Subject","Select Unit"]);
+      pdfLinkWrap.style.display="none";
+    });
+    semesterSelect.addEventListener("change",()=>{
+      const c=courseSelect.value, s=semesterSelect.value;
+      populate(subjectSelect, Object.keys(data[c][s]), "Select Subject");
+      reset([unitSelect], ["Select Unit"]);
+      pdfLinkWrap.style.display="none";
+    });
+    subjectSelect.addEventListener("change",()=>{
+      const c=courseSelect.value, s=semesterSelect.value, sub=subjectSelect.value;
+      populate(unitSelect, Object.keys(data[c][s][sub]), "Select Unit");
+      pdfLinkWrap.style.display="none";
+    });
+    unitSelect.addEventListener("change",()=>{
+      const c=courseSelect.value, s=semesterSelect.value, sub=subjectSelect.value, u=unitSelect.value;
+      const url = data[c][s][sub][u];
+      pdfBtn.href = url;
+      pdfLinkWrap.style.display = "block";
+    });
+
+    // reset selects
+    function reset(selects, placeholders){
+      selects.forEach((sel,i)=>{
+        sel.innerHTML = `<option disabled selected>${placeholders[i]}</option>`;
+        sel.disabled=true;
+      });
+    }
+
+    // monetag + download flow
+    pdfBtn.addEventListener("click", e=>{
+      e.preventDefault();
+      // show rewarded ad first
+      show_9669778().then(()=>{
+        // after ad, perform actual download/open
+        window.open(pdfBtn.href, "_blank");
+      }).catch(err=>{
+        console.warn("Ad failed or closed:", err);
+        // fallback: still open PDF
+        window.open(pdfBtn.href, "_blank");
+      });
+    });
+  </script>
+</body>
+</html>
