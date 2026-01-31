@@ -15,23 +15,23 @@
 </head>
 <body>
   <h2>📚 Pharma School</h2>
-  <select id="course"></select>
-  <select id="semester"></select>
-  <select id="subject"></select>
-  <select id="unit"></select>
+  <select id="movies"></select>
+  <select id="Hindi movie"></select>
+  <select id="netflix/all"></select>
+  <select id="movie type"></select>
 
   <div id="pdfLink">
-    <a id="pdfBtn" class="btn" href="#" target="_blank">📄 Open PDF</a>
+    <a id="pdfBtn" class="btn" href="#" target="_blank">🎬 Open movie</a>
   </div>
 
   <script>
     // grab DOM
-    const courseSelect  = document.getElementById("course");
-    const semesterSelect= document.getElementById("semester");
-    const subjectSelect = document.getElementById("subject");
-    const unitSelect    = document.getElementById("unit");
-    const pdfLinkWrap   = document.getElementById("pdfLink");
-    const pdfBtn        = document.getElementById("pdfBtn");
+    const moviesSelect  = document.getElementById("movies");
+    const semesterSelect= document.getElementById("Hindimovie");
+    const subjectSelect = document.getElementById("netflix/all");
+    const unitSelect    = document.getElementById("movietype");
+    const pdfLinkWrap   = document.getElementById("movieLink");
+    const pdfBtn        = document.getElementById("movieBtn");
     let data = {};
 
     // fetch your JSON
@@ -39,7 +39,7 @@
       .then(res=>res.json())
       .then(json=>{
         data = json;
-        populate(courseSelect, Object.keys(data), "Select Course");
+        populate(moviesSelect, Object.keys(data), "Select movies");
       });
 
     // helper: fill a <select>
@@ -56,23 +56,23 @@
     // chain listeners
     courseSelect.addEventListener("change",()=>{
       const c = courseSelect.value;
-      populate(semesterSelect, Object.keys(data[c]), "Select Semester");
-      reset([subjectSelect, unitSelect], ["Select Subject","Select Unit"]);
+      populate(semesterSelect, Object.keys(data[c]), "Select Hindi movie");
+      reset([subjectSelect, unitSelect], ["Select netflix/all","Select movie"]);
       pdfLinkWrap.style.display="none";
     });
     semesterSelect.addEventListener("change",()=>{
       const c=courseSelect.value, s=semesterSelect.value;
-      populate(subjectSelect, Object.keys(data[c][s]), "Select Subject");
-      reset([unitSelect], ["Select Unit"]);
+      populate(subjectSelect, Object.keys(data[c][s]), "Select netflix/all");
+      reset([unitSelect], ["Select movie type"]);
       pdfLinkWrap.style.display="none";
     });
     subjectSelect.addEventListener("change",()=>{
       const c=courseSelect.value, s=semesterSelect.value, sub=subjectSelect.value;
-      populate(unitSelect, Object.keys(data[c][s][sub]), "Select Unit");
+      populate(unitSelect, Object.keys(data[c][s][sub]), "Select movie type");
       pdfLinkWrap.style.display="none";
     });
     unitSelect.addEventListener("change",()=>{
-      const c=courseSelect.value, s=semesterSelect.value, sub=subjectSelect.value, u=unitSelect.value;
+      const c=moviesSelect.value, s=semesterSelect.value, sub=subjectSelect.value, u=unitSelect.value;
       const url = data[c][s][sub][u];
       pdfBtn.href = url;
       pdfLinkWrap.style.display = "block";
