@@ -23,60 +23,39 @@
   <div id="pdfLink">
     <a id="pdfBtn" class="btn" href="#" target="_blank">🎬 Open movie</a>
   </div>
+<script>
+const moviesSelect  = document.getElementById("movies");
+const semesterSelect= document.getElementById("hindiMovie");
+const subjectSelect = document.getElementById("netflixAll");
+const unitSelect    = document.getElementById("movieType");
+const pdfLinkWrap   = document.getElementById("movieLink");
+const pdfBtn        = document.getElementById("movieBtn");
+let data = {};
 
-  <script>
-    // grab DOM
-    const moviesSelect  = document.getElementById("movies");
-    const semesterSelect= document.getElementById("Hindimovie");
-    const subjectSelect = document.getElementById("netflix/all");
-    const unitSelect    = document.getElementById("movietype");
-    const pdfLinkWrap   = document.getElementById("movieLink");
-    const pdfBtn        = document.getElementById("movieBtn");
-    let data = {};
+fetch("https://raw.githubusercontent.com/Sonurajpt/Ktmovies/refs/heads/main/bot.json")
+  .then(res=>res.json())
+  .then(json=>{
+    data = json;
+    populate(moviesSelect, Object.keys(data), "Select movies");
+  });
 
-    // fetch your JSON
-    fetch("https://raw.githubusercontent.com/Sonurajpt/Ktmovies/refs/heads/main/bot.json")
-      .then(res=>res.json())
-      .then(json=>{
-        data = json;
-        populate(moviesSelect, Object.keys(data), "Select movies");
-      });
+function populate(sel, items, placeholder){
+  sel.innerHTML = `<option disabled selected>${placeholder}</option>`;
+  items.forEach(i=>{
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = i;
+    sel.appendChild(opt);
+  });
+  sel.disabled = false;
+}
 
-    // helper: fill a <select>
-    function populate(sel, items, placeholder){
-      sel.innerHTML = `<option disabled selected>${placeholder}</option>`;
-      items.forEach(i=>{
-        const opt = document.createElement("option");
-        opt.value = i; opt.textContent = i;
-        sel.appendChild(opt);
-      });
-      sel.disabled = false;
-    }
-
-    // chain listeners
-    courseSelect.addEventListener("change",()=>{
-      const c = courseSelect.value;
-      populate(semesterSelect, Object.keys(data[c]), "Select Hindi movie");
-      reset([subjectSelect, unitSelect], ["Select netflix/all","Select movie"]);
-      pdfLinkWrap.style.display="none";
-    });
-    semesterSelect.addEventListener("change",()=>{
-      const c=courseSelect.value, s=semesterSelect.value;
-      populate(subjectSelect, Object.keys(data[c][s]), "Select netflix/all");
-      reset([unitSelect], ["Select movie type"]);
-      pdfLinkWrap.style.display="none";
-    });
-    subjectSelect.addEventListener("change",()=>{
-      const c=courseSelect.value, s=semesterSelect.value, sub=subjectSelect.value;
-      populate(unitSelect, Object.keys(data[c][s][sub]), "Select movie type");
-      pdfLinkWrap.style.display="none";
-    });
-    unitSelect.addEventListener("change",()=>{
-      const c=moviesSelect.value, s=semesterSelect.value, sub=subjectSelect.value, u=unitSelect.value;
-      const url = data[c][s][sub][u];
-      pdfBtn.href = url;
-      pdfLinkWrap.style.display = "block";
-    });
+moviesSelect.addEventListener("change",()=>{
+  const c = moviesSelect.value;
+  populate(semesterSelect, Object.keys(data[c]), "Select Hindi movie");
+  reset([subjectSelect, unitSelect], ["Select netflix/all","Select movie"]);
+  pdfLinkWrap.style.display="none";
+});
 
     // reset selects
     function reset(selects, placeholders){
